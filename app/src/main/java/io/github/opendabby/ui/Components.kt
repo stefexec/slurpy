@@ -66,12 +66,12 @@ fun TimePill(seconds: Int, heat: Boolean) {
         modifier = Modifier
             .clip(CircleShape)
             .background(if (heat) HeatPillBg else CoolPillBg)
-            .padding(horizontal = 10.dp, vertical = 1.dp),
+            .padding(horizontal = 8.dp, vertical = 2.dp),
     ) {
         Text(
             text = "${if (heat) "🔥" else "❄️"} ${seconds}s",
             color = if (heat) HeatColor else CoolColor,
-            fontSize = 15.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
         )
     }

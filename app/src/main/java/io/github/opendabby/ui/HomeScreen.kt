@@ -377,6 +377,7 @@ private fun PresetCard(
             .padding(14.dp)
     ) {
         // Collapsed Top Row
+        // Collapsed Top Row
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
@@ -384,12 +385,12 @@ private fun PresetCard(
             // Drag handle on left
             dragHandle()
 
-            Spacer(Modifier.width(8.dp))
+            Spacer(Modifier.width(6.dp))
 
             // Emoji badge (tap to change)
             Box(
                 modifier = Modifier
-                    .size(42.dp)
+                    .size(40.dp)
                     .clip(CircleShape)
                     .background(Color(0xFF242424))
                     .border(1.dp, Color(0xFF333333), CircleShape)
@@ -399,33 +400,44 @@ private fun PresetCard(
                 Text(text = preset.emoji, fontSize = 20.sp)
             }
 
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(10.dp))
 
-            // Name and Temp Range
-            Column(modifier = Modifier.weight(1f)) {
+            // Name and Temp Range (full room for text without cut-off)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp),
+                verticalArrangement = Arrangement.Center,
+            ) {
                 Text(
                     text = preset.displayName,
                     color = TextPrimary,
                     fontSize = 17.sp,
                     fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
+                    maxLines = 2,
+                    lineHeight = 21.sp,
                     overflow = TextOverflow.Ellipsis,
                 )
+                Spacer(Modifier.height(2.dp))
                 Text(
                     text = preset.tempRange,
                     color = TextSecondary,
-                    fontSize = 14.sp,
+                    fontSize = 13.sp,
+                    maxLines = 1,
+                    softWrap = false,
                 )
             }
 
-            // Time Pills
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            // Time Pills (stacked vertically to maximize horizontal room for preset names)
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+            ) {
                 TimePill(seconds = preset.heatSeconds, heat = true)
-                Spacer(Modifier.width(6.dp))
                 TimePill(seconds = preset.coolSeconds, heat = false)
             }
 
-            Spacer(Modifier.width(6.dp))
+            Spacer(Modifier.width(4.dp))
 
             // Expand/Edit button
             IconButton(
