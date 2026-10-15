@@ -61,6 +61,10 @@ class Storage(context: Context) {
         get() = enumOrDefault(prefs.getString(KEY_TEMP_UNIT, null), TempUnit.Fahrenheit)
         set(value) = prefs.edit { putString(KEY_TEMP_UNIT, value.name) }
 
+    var vibrationEnabled: Boolean
+        get() = prefs.getBoolean(KEY_VIBRATION, true)
+        set(value) = prefs.edit { putBoolean(KEY_VIBRATION, value) }
+
     private inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =
         enumValues<T>().firstOrNull { it.name == name } ?: default
 
@@ -105,5 +109,6 @@ class Storage(context: Context) {
         const val KEY_COOL_SOUND = "cool_sound"
         const val KEY_THEME = "theme"
         const val KEY_TEMP_UNIT = "temp_unit"
+        const val KEY_VIBRATION = "vibration_enabled"
     }
 }

@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Thermostat
+import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ButtonDefaults
@@ -50,6 +51,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -188,9 +191,9 @@ fun SettingsScreen(
                 }
             }
 
-            // SOUND Section
+            // SOUND & HAPTICS Section
             item {
-                SectionLabel(text = "SOUND")
+                SectionLabel(text = "SOUND & HAPTICS")
                 Spacer(Modifier.height(8.dp))
                 Column(
                     modifier = Modifier
@@ -211,6 +214,14 @@ fun SettingsScreen(
                         title = "Cool Down Sound",
                         subtitle = viewModel.coolSound.label,
                         onClick = { soundDialogTarget = "cool" },
+                    )
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242424)))
+                    SettingsToggleRow(
+                        icon = Icons.Filled.Vibration,
+                        title = "Vibrate on Alerts",
+                        subtitle = "Vibrate when heat finishes and when cycle completes",
+                        checked = viewModel.vibrationEnabled,
+                        onCheckedChange = { viewModel.updateVibrationEnabled(it) },
                     )
                 }
             }
@@ -384,6 +395,52 @@ private fun SettingsRow(
         }
 
         Text("›", color = TextSecondary, fontSize = 20.sp, fontWeight = FontWeight.Light)
+    }
+}
+
+@Composable
+private fun SettingsToggleRow(
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Box(
+            modifier = Modifier
+                .size(36.dp)
+                .clip(CircleShape)
+                .background(Color(0xFF222222)),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(icon, contentDescription = null, tint = slurpy.accent, modifier = Modifier.size(18.dp))
+        }
+
+        Spacer(Modifier.width(14.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text(subtitle, color = TextSecondary, fontSize = 13.sp)
+        }
+
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(
+                checkedThumbColor = Color.White,
+                checkedTrackColor = slurpy.accent,
+                uncheckedThumbColor = Color(0xFF888888),
+                uncheckedTrackColor = Color(0xFF262626),
+                uncheckedBorderColor = Color(0xFF404040),
+            ),
+        )
     }
 }
 

@@ -14,6 +14,7 @@ import dev.gurk.slurpy.data.Session
 import dev.gurk.slurpy.data.Sound
 import dev.gurk.slurpy.data.Storage
 import dev.gurk.slurpy.data.TempUnit
+import dev.gurk.slurpy.sound.HapticPlayer
 import dev.gurk.slurpy.sound.SoundPlayer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -32,6 +33,7 @@ data class TimerState(
 class AppViewModel(app: Application) : AndroidViewModel(app) {
     private val storage = Storage(app)
     private val sounds = SoundPlayer()
+    private val haptics = HapticPlayer(app)
     private var timerJob: Job? = null
 
     var presets by mutableStateOf(storage.loadPresets())
@@ -43,6 +45,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     var heatSound by mutableStateOf(storage.heatSound)
         private set
     var coolSound by mutableStateOf(storage.coolSound)
+        private set
+    var vibrationEnabled by mutableStateOf(storage.vibrationEnabled)
         private set
     var theme by mutableStateOf(storage.theme)
         private set
@@ -121,6 +125,14 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         storage.tempUnit = unit
     }
 
+    fun updateVibrationEnabled(enabled: Boolean) {
+        vibrationEnabled = enabled
+        storage.vibrationEnabled = enabled
+        if (enabled) {
+            haptics.pulse()
+        }
+    }
+
     fun previewSound(sound: Sound) = sounds.play(sound)
 
     fun clearHistory() {
@@ -167,9 +179,15 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             if (from <= Phase.Heat) {
                 runPhase(preset, Phase.Heat, preset.heatSeconds * 1000L)
                 sounds.play(heatSound)
+                if (vibrationEnabled) {
+                    haptics.vibrateHeatDone()
+                }
             }
             runPhase(preset, Phase.Cool, preset.coolSeconds * 1000L)
             sounds.play(coolSound)
+            if (vibrationEnabled) {
+                haptics.vibrateCycleComplete()
+            }
             recordSession(preset)
             timer = TimerState(preset, Phase.Done)
         }

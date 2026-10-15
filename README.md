@@ -5,7 +5,7 @@
 Slurpy is a free, privacy-friendly, open-source precision companion timer for concentrates and quartz bangers.
 
 ## Features
-- **Precision Phases**: Countdown timer for heat-up, cool-down, and ready states with synthesized audio cues.
+- **Precision Phases**: Countdown timer for heat-up, cool-down, and ready states with synthesized audio cues and optional haptic vibration alerts.
 - **Customizable Presets**: Configure heat and cool durations, temperature ranges (°C / °F), names, and emojis with drag-and-drop reordering.
 - **Celsius / Fahrenheit Toggle**: Switch temperature display and steppers instantly.
 - **Activity & Trend Calendar**: Weekly distribution bar charts and a compact 4-week activity heatmap with week-over-week trend tracking.
