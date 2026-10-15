@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Gradient ring with a flame and a snowflake at the top, matching the in-app logo. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Ring: 320° arc from -75° clockwise to 245°, radius 24 around (54,54). -->
+    <path
+        android:pathData="M60.21,30.82 A24,24 0 1,1 43.86,32.25"
+        android:strokeWidth="6"
+        android:strokeLineCap="round">
+        <aapt:attr name="android:strokeColor">
+            <gradient
+                android:type="sweep"
+                android:centerX="54"
+                android:centerY="54">
+                <item android:offset="0.0" android:color="#FFF07A5A" />
+                <item android:offset="0.25" android:color="#FFC778E8" />
+                <item android:offset="0.5" android:color="#FF5AA8F0" />
+                <item android:offset="0.74" android:color="#FF8ED8F5" />
+                <item android:offset="0.76" android:color="#FFF5A040" />
+                <item android:offset="1.0" android:color="#FFF07A5A" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Flame -->
+    <path
+        android:fillColor="#FFFF6A2B"
+        android:pathData="M60,19 C63,23 65.5,25.5 65.5,28.5 A5.5,5.5 0 0,1 54.5,28.5 C54.5,25.5 57,23 60,19 Z" />
+    <path
+        android:fillColor="#FFFFC94A"
+        android:pathData="M60,24.5 C61.6,26.6 62.7,27.8 62.7,29.3 A2.7,2.7 0 0,1 57.3,29.3 C57.3,27.8 58.4,26.6 60,24.5 Z" />
+
+    <!-- Snowflake -->
+    <path
+        android:pathData="M41,22.5 L41,31.5 M37.1,24.75 L44.9,29.25 M37.1,29.25 L44.9,24.75"
+        android:strokeColor="#FF8ED8F5"
+        android:strokeWidth="1.6"
+        android:strokeLineCap="round" />
+</vector>
