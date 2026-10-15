@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="ic_launcher_background">#161616</color>
+    <color name="ic_launcher_background">#141414</color>
 
     <style name="Theme.Dabby" parent="android:Theme.Material.NoActionBar">
         <item name="android:windowBackground">@android:color/black</item>
