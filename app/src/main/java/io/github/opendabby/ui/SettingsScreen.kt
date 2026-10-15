@@ -54,6 +54,7 @@ import io.github.opendabby.data.AppTheme
 import io.github.opendabby.data.Session
 import io.github.opendabby.data.Sound
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -493,6 +494,65 @@ private fun HistoryScreen(
     val totalSeconds = sessions.sumOf { it.heatSeconds + it.coolSeconds }
     val totalMinutes = totalSeconds / 60
 
+    val todayStart = remember {
+        Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }.timeInMillis
+    }
+    val todayDabs = sessions.count { it.timestamp >= todayStart }
+
+    val favPreset = remember(sessions) {
+        sessions.groupBy { it.presetName }
+            .maxByOrNull { it.value.size }
+            ?.let { entry ->
+                val emoji = entry.value.first().emoji
+                "$emoji ${entry.key} (${entry.value.size})"
+            }
+    }
+
+    val avgHeat = if (sessions.isNotEmpty()) (sessions.sumOf { it.heatSeconds } / sessions.size) else 0
+    val avgCool = if (sessions.isNotEmpty()) (sessions.sumOf { it.coolSeconds } / sessions.size) else 0
+
+    // Compute dabs per day of week (0=Mon .. 6=Sun)
+    val dayCounts = remember(sessions) {
+        val counts = IntArray(7)
+        val cal = Calendar.getInstance()
+        sessions.forEach { s ->
+            cal.timeInMillis = s.timestamp
+            val dayIndex = when (cal.get(Calendar.DAY_OF_WEEK)) {
+                Calendar.MONDAY -> 0
+                Calendar.TUESDAY -> 1
+                Calendar.WEDNESDAY -> 2
+                Calendar.THURSDAY -> 3
+                Calendar.FRIDAY -> 4
+                Calendar.SATURDAY -> 5
+                Calendar.SUNDAY -> 6
+                else -> 0
+            }
+            counts[dayIndex]++
+        }
+        counts
+    }
+
+    val todayIndex = remember {
+        when (Calendar.getInstance().get(Calendar.DAY_OF_WEEK)) {
+            Calendar.MONDAY -> 0
+            Calendar.TUESDAY -> 1
+            Calendar.WEDNESDAY -> 2
+            Calendar.THURSDAY -> 3
+            Calendar.FRIDAY -> 4
+            Calendar.SATURDAY -> 5
+            Calendar.SUNDAY -> 6
+            else -> 0
+        }
+    }
+
+    val maxCount = dayCounts.maxOrNull() ?: 0
+    val peakDayIndex = if (maxCount > 0) dayCounts.indexOfFirst { it == maxCount } else -1
+
     val dateFormat = remember { SimpleDateFormat("MMM d, yyyy · h:mm a", Locale.getDefault()) }
 
     Box(
@@ -538,15 +598,56 @@ private fun HistoryScreen(
                 }
             }
 
-            // Stats Cards
+            // Stats Cards Row: Total Dabs, Today, Total Time
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     StatCard(title = "Total Dabs", value = "$totalDabs", modifier = Modifier.weight(1f))
+                    StatCard(title = "Today", value = "$todayDabs", modifier = Modifier.weight(1f))
                     StatCard(title = "Total Time", value = "${totalMinutes}m", modifier = Modifier.weight(1f))
                 }
+            }
+
+            // Insights Pill: Favorite Preset & Average Times
+            if (sessions.isNotEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(Color(0xFF141414))
+                            .border(1.dp, Color(0xFF222222), RoundedCornerShape(14.dp))
+                            .padding(horizontal = 14.dp, vertical = 10.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (favPreset != null) {
+                            Text(
+                                text = "Fav: $favPreset",
+                                color = TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                        Text(
+                            text = "Avg: 🔥 ${avgHeat}s · ❄️ ${avgCool}s",
+                            color = TextSecondary,
+                            fontSize = 13.sp,
+                        )
+                    }
+                }
+            }
+
+            // Day of Week Bar Chart
+            item {
+                WeeklyActivityChart(
+                    dayCounts = dayCounts,
+                    peakDayIndex = peakDayIndex,
+                    todayIndex = todayIndex,
+                    maxCount = maxCount,
+                )
             }
 
             item {
@@ -629,6 +730,158 @@ private fun StatCard(title: String, value: String, modifier: Modifier = Modifier
             Text(value, color = dabby.accent, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
             Text(title, color = TextSecondary, fontSize = 13.sp)
+        }
+    }
+}
+
+/** Modern bar chart showing dab distribution across all days of the week */
+@Composable
+private fun WeeklyActivityChart(
+    dayCounts: IntArray,
+    peakDayIndex: Int,
+    todayIndex: Int,
+    maxCount: Int,
+    modifier: Modifier = Modifier,
+) {
+    val dayNames = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    val fullDayNames = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(dabby.surface)
+            .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp))
+            .padding(16.dp),
+    ) {
+        Column {
+            // Header of chart
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "ACTIVITY BY DAY",
+                    color = TextSecondary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    letterSpacing = 2.sp,
+                )
+                if (peakDayIndex in 0..6 && maxCount > 0) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Peak: ",
+                            color = TextSecondary,
+                            fontSize = 12.sp,
+                        )
+                        Text(
+                            text = "${fullDayNames[peakDayIndex]} ($maxCount)",
+                            color = dabby.accent,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            // 7 Bar Columns
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(118.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom,
+            ) {
+                for (i in 0..6) {
+                    val count = dayCounts[i]
+                    val isPeak = i == peakDayIndex && count > 0
+                    val isToday = i == todayIndex
+                    val barHeightFraction = if (maxCount > 0) (count.toFloat() / maxCount.toFloat()) else 0f
+                    val barHeight = (barHeightFraction * 68).dp.coerceAtLeast(if (count > 0) 8.dp else 4.dp)
+
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Bottom,
+                        modifier = Modifier.weight(1f),
+                    ) {
+                        // Count number label on top of bar
+                        Text(
+                            text = if (count > 0) "$count" else "",
+                            color = if (isPeak) dabby.accent else TextSecondary,
+                            fontSize = 11.sp,
+                            fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Medium,
+                            modifier = Modifier.height(16.dp),
+                        )
+
+                        Spacer(Modifier.height(4.dp))
+
+                        // Bar track + fill
+                        Box(
+                            modifier = Modifier
+                                .width(22.dp)
+                                .height(70.dp)
+                                .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp, bottomStart = 3.dp, bottomEnd = 3.dp))
+                                .background(Color(0xFF202020)),
+                            contentAlignment = Alignment.BottomCenter,
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(barHeight)
+                                    .clip(RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp, bottomStart = 3.dp, bottomEnd = 3.dp))
+                                    .background(
+                                        if (isPeak) {
+                                            androidx.compose.ui.graphics.Brush.verticalGradient(
+                                                listOf(
+                                                    dabby.accent,
+                                                    dabby.accent.copy(alpha = 0.75f)
+                                                )
+                                            )
+                                        } else if (count > 0) {
+                                            androidx.compose.ui.graphics.Brush.verticalGradient(
+                                                listOf(
+                                                    dabby.accent.copy(alpha = 0.65f),
+                                                    dabby.accent.copy(alpha = 0.35f)
+                                                )
+                                            )
+                                        } else {
+                                            androidx.compose.ui.graphics.SolidColor(Color(0xFF282828))
+                                        }
+                                    )
+                            )
+                        }
+
+                        Spacer(Modifier.height(8.dp))
+
+                        // Day Label
+                        Text(
+                            text = dayNames[i],
+                            color = if (isToday) TextPrimary else TextSecondary,
+                            fontSize = 11.sp,
+                            fontWeight = if (isToday) FontWeight.Bold else FontWeight.Normal,
+                        )
+
+                        // Indicator for today
+                        Box(
+                            modifier = Modifier
+                                .size(4.dp)
+                                .padding(top = 1.dp)
+                        ) {
+                            if (isToday) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(3.dp)
+                                        .clip(CircleShape)
+                                        .background(dabby.accent)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
