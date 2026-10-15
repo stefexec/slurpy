@@ -728,6 +728,11 @@ private fun HistoryScreen(
                 }
             }
 
+            // Dabs Over Time & 4-Week Activity Calendar
+            item {
+                DabsOverTimeCard(sessions = sessions)
+            }
+
             // Day of Week Bar Chart
             item {
                 WeeklyActivityChart(
@@ -1019,6 +1024,296 @@ private fun StatCard(title: String, value: String, modifier: Modifier = Modifier
             Text(value, color = dabby.accent, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
             Text(title, color = TextSecondary, fontSize = 13.sp)
+        }
+    }
+}
+
+/** Compact 4-Week Activity Heatmap Calendar & Week-over-Week Trend */
+@Composable
+private fun DabsOverTimeCard(
+    sessions: List<Session>,
+    modifier: Modifier = Modifier,
+) {
+    val now = remember { System.currentTimeMillis() }
+    val todayCal = remember(now) {
+        Calendar.getInstance().apply {
+            timeInMillis = now
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+    }
+    val todayMidnight = todayCal.timeInMillis
+
+    // Start of current week (Monday)
+    val currentWeekStartCal = remember(todayMidnight) {
+        (todayCal.clone() as Calendar).apply {
+            val dayOfWeek = get(Calendar.DAY_OF_WEEK)
+            val daysFromMonday = when (dayOfWeek) {
+                Calendar.MONDAY -> 0
+                Calendar.TUESDAY -> 1
+                Calendar.WEDNESDAY -> 2
+                Calendar.THURSDAY -> 3
+                Calendar.FRIDAY -> 4
+                Calendar.SATURDAY -> 5
+                Calendar.SUNDAY -> 6
+                else -> 0
+            }
+            add(Calendar.DAY_OF_MONTH, -daysFromMonday)
+        }
+    }
+    val currentWeekStart = currentWeekStartCal.timeInMillis
+
+    // Start of previous week (7 days before currentWeekStart)
+    val prevWeekStart = remember(currentWeekStart) {
+        (currentWeekStartCal.clone() as Calendar).apply {
+            add(Calendar.DAY_OF_MONTH, -7)
+        }.timeInMillis
+    }
+
+    // Counts for this week and last week
+    val thisWeekCount = remember(sessions, currentWeekStart) {
+        sessions.count { it.timestamp >= currentWeekStart }
+    }
+    val prevWeekCount = remember(sessions, prevWeekStart, currentWeekStart) {
+        sessions.count { it.timestamp in prevWeekStart until currentWeekStart }
+    }
+
+    // Trend percentage
+    val trend = remember(thisWeekCount, prevWeekCount) {
+        when {
+            prevWeekCount == 0 && thisWeekCount == 0 -> null
+            prevWeekCount == 0 -> 100
+            else -> Math.round(((thisWeekCount - prevWeekCount).toDouble() / prevWeekCount) * 100).toInt()
+        }
+    }
+
+    data class DayCell(
+        val dayNumber: Int,
+        val timestamp: Long,
+        val dabsCount: Int,
+        val isToday: Boolean,
+        val isFuture: Boolean,
+    )
+
+    // Build 4 weeks of days (28 days ending on Sunday of current week)
+    val weeks: List<List<DayCell>> = remember(sessions, currentWeekStart, todayMidnight) {
+        val gridStartCal = (currentWeekStartCal.clone() as Calendar).apply {
+            add(Calendar.DAY_OF_MONTH, -21)
+        }
+        val cal = gridStartCal.clone() as Calendar
+        val oneDayMillis = 24 * 60 * 60 * 1000L
+
+        (0 until 4).map { _ ->
+            (0 until 7).map { _ ->
+                val cellMidnight = cal.timeInMillis
+                val nextMidnight = cellMidnight + oneDayMillis
+                val count = sessions.count { it.timestamp in cellMidnight until nextMidnight }
+                val isToday = cellMidnight == todayMidnight
+                val isFuture = cellMidnight > todayMidnight
+                val cell = DayCell(
+                    dayNumber = cal.get(Calendar.DAY_OF_MONTH),
+                    timestamp = cellMidnight,
+                    dabsCount = count,
+                    isToday = isToday,
+                    isFuture = isFuture,
+                )
+                cal.add(Calendar.DAY_OF_MONTH, 1)
+                cell
+            }
+        }
+    }
+
+    val dayHeaders = listOf("M", "T", "W", "T", "F", "S", "S")
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(18.dp))
+            .background(dabby.surface)
+            .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp))
+            .padding(16.dp),
+    ) {
+        Column {
+            // Header: Title & Trend Badge
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column {
+                    Text(
+                        text = "DABS OVER TIME",
+                        color = TextSecondary,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.sp,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = "$thisWeekCount dabs this week",
+                        color = TextPrimary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+
+                if (trend != null) {
+                    val isUp = trend > 0
+                    val isDown = trend < 0
+                    val badgeColor = when {
+                        isUp -> dabby.accent
+                        isDown -> Color(0xFF56B6F2)
+                        else -> TextSecondary
+                    }
+                    val icon = when {
+                        isUp -> "↑"
+                        isDown -> "↓"
+                        else -> "→"
+                    }
+                    val text = when {
+                        isUp -> "+$trend%"
+                        isDown -> "$trend%"
+                        else -> "0%"
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(badgeColor.copy(alpha = 0.15f))
+                            .border(1.dp, badgeColor.copy(alpha = 0.35f), RoundedCornerShape(10.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            text = "$icon $text vs prev week",
+                            color = badgeColor,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "vs $prevWeekCount last week",
+                        color = TextSecondary,
+                        fontSize = 12.sp,
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(14.dp))
+
+            // Weekday Initials Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                dayHeaders.forEach { letter ->
+                    Box(
+                        modifier = Modifier.weight(1f),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = letter,
+                            color = TextSecondary,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(6.dp))
+
+            // 4 Weeks Rows
+            weeks.forEach { week ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.5.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                ) {
+                    week.forEach { day ->
+                        val (bgColor, textColor, borderModifier) = when {
+                            day.isFuture -> Triple(
+                                Color(0xFF141414),
+                                Color(0xFF404040),
+                                Modifier.border(0.5.dp, Color(0xFF1E1E1E), RoundedCornerShape(8.dp)),
+                            )
+                            day.dabsCount > 0 -> {
+                                val alpha = when {
+                                    day.dabsCount >= 4 -> 0.95f
+                                    day.dabsCount >= 2 -> 0.65f
+                                    else -> 0.35f
+                                }
+                                Triple(
+                                    dabby.accent.copy(alpha = alpha),
+                                    if (alpha > 0.5f) Color.Black else TextPrimary,
+                                    if (day.isToday) Modifier.border(1.5.dp, Color.White, RoundedCornerShape(8.dp))
+                                    else Modifier.border(0.5.dp, dabby.accent.copy(alpha = 0.5f), RoundedCornerShape(8.dp)),
+                                )
+                            }
+                            day.isToday -> Triple(
+                                Color(0xFF222222),
+                                TextPrimary,
+                                Modifier.border(1.5.dp, Color.White, RoundedCornerShape(8.dp)),
+                            )
+                            else -> Triple(
+                                Color(0xFF181818),
+                                TextSecondary.copy(alpha = 0.6f),
+                                Modifier.border(0.5.dp, Color(0xFF222222), RoundedCornerShape(8.dp)),
+                            )
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(28.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(bgColor)
+                                .then(borderModifier),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "${day.dayNumber}",
+                                color = textColor,
+                                fontSize = 11.sp,
+                                fontWeight = if (day.dabsCount > 0 || day.isToday) FontWeight.Bold else FontWeight.Normal,
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(10.dp))
+
+            // Footer Legend
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Last 4 weeks",
+                    color = TextSecondary,
+                    fontSize = 11.sp,
+                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "0", color = TextSecondary, fontSize = 10.sp)
+                    Spacer(Modifier.width(4.dp))
+                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(Color(0xFF181818)))
+                    Spacer(Modifier.width(3.dp))
+                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(dabby.accent.copy(alpha = 0.35f)))
+                    Spacer(Modifier.width(3.dp))
+                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(dabby.accent.copy(alpha = 0.65f)))
+                    Spacer(Modifier.width(3.dp))
+                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(dabby.accent))
+                    Spacer(Modifier.width(4.dp))
+                    Text(text = "4+ dabs", color = TextSecondary, fontSize = 10.sp)
+                }
+            }
         }
     }
 }
