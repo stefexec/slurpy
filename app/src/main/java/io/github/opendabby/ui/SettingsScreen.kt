@@ -633,18 +633,6 @@ private fun HistoryScreen(
     }
     val todayDabs = sessions.count { it.timestamp >= todayStart }
 
-    val favPreset = remember(sessions) {
-        sessions.groupBy { it.presetName }
-            .maxByOrNull { it.value.size }
-            ?.let { entry ->
-                val emoji = entry.value.first().emoji
-                "$emoji ${entry.key} (${entry.value.size})"
-            }
-    }
-
-    val avgHeat = if (sessions.isNotEmpty()) (sessions.sumOf { it.heatSeconds } / sessions.size) else 0
-    val avgCool = if (sessions.isNotEmpty()) (sessions.sumOf { it.coolSeconds } / sessions.size) else 0
-
     // Compute dabs per day of week (0=Mon .. 6=Sun)
     val dayCounts = remember(sessions) {
         val counts = IntArray(7)
@@ -737,36 +725,6 @@ private fun HistoryScreen(
                     StatCard(title = "Total Dabs", value = "$totalDabs", modifier = Modifier.weight(1f))
                     StatCard(title = "Today", value = "$todayDabs", modifier = Modifier.weight(1f))
                     StatCard(title = "Total Time", value = "${totalMinutes}m", modifier = Modifier.weight(1f))
-                }
-            }
-
-            // Insights Pill: Favorite Preset & Average Times
-            if (sessions.isNotEmpty()) {
-                item {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(Color(0xFF141414))
-                            .border(1.dp, Color(0xFF222222), RoundedCornerShape(14.dp))
-                            .padding(horizontal = 14.dp, vertical = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (favPreset != null) {
-                            Text(
-                                text = "Fav: $favPreset",
-                                color = TextPrimary,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.Medium,
-                            )
-                        }
-                        Text(
-                            text = "Avg: 🔥 ${avgHeat}s · ❄️ ${avgCool}s",
-                            color = TextSecondary,
-                            fontSize = 13.sp,
-                        )
-                    }
                 }
             }
 
