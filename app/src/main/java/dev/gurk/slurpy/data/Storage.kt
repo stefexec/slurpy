@@ -1,4 +1,4 @@
-package io.github.opendabby.data
+package dev.gurk.slurpy.data
 
 import android.content.Context
 import androidx.core.content.edit
@@ -7,7 +7,22 @@ import org.json.JSONObject
 
 /** Persists everything in SharedPreferences as small JSON blobs. */
 class Storage(context: Context) {
-    private val prefs = context.getSharedPreferences("dabby", Context.MODE_PRIVATE)
+    private val prefs = context.getSharedPreferences("slurpy", Context.MODE_PRIVATE).also { newPrefs ->
+        val oldPrefs = context.getSharedPreferences("dabby", Context.MODE_PRIVATE)
+        if (oldPrefs.all.isNotEmpty() && newPrefs.all.isEmpty()) {
+            newPrefs.edit {
+                oldPrefs.all.forEach { (k, v) ->
+                    when (v) {
+                        is String -> putString(k, v)
+                        is Boolean -> putBoolean(k, v)
+                        is Int -> putInt(k, v)
+                        is Long -> putLong(k, v)
+                        is Float -> putFloat(k, v)
+                    }
+                }
+            }
+        }
+    }
 
     fun loadPresets(): List<Preset> =
         prefs.getString(KEY_PRESETS, null)

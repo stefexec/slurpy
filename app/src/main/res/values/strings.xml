@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Dabby</string>
+    <string name="app_name">Slurpy</string>
+    <string name="app_description">Slurpy - Open Source Dabbing Timer</string>
 </resources>

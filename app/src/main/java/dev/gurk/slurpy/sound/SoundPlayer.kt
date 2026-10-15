@@ -1,9 +1,9 @@
-package io.github.opendabby.sound
+package dev.gurk.slurpy.sound
 
 import android.media.AudioAttributes
 import android.media.AudioFormat
 import android.media.AudioTrack
-import io.github.opendabby.data.Sound
+import dev.gurk.slurpy.data.Sound
 import kotlin.math.PI
 import kotlin.math.exp
 import kotlin.math.min

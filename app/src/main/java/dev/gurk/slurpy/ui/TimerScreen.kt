@@ -1,4 +1,4 @@
-package io.github.opendabby.ui
+package dev.gurk.slurpy.ui
 
 import android.os.SystemClock
 import androidx.compose.animation.AnimatedContent
@@ -58,9 +58,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.opendabby.AppViewModel
-import io.github.opendabby.Phase
-import io.github.opendabby.TimerState
+import dev.gurk.slurpy.AppViewModel
+import dev.gurk.slurpy.Phase
+import dev.gurk.slurpy.TimerState
+import dev.gurk.slurpy.data.Preset
 import kotlinx.coroutines.delay
 import kotlin.math.ceil
 
@@ -88,7 +89,7 @@ fun TimerScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(dabby.background)
+            .background(slurpy.background)
             .statusBarsPadding()
             .navigationBarsPadding()
             .padding(20.dp),
@@ -226,7 +227,7 @@ private fun GetReadyContent(remainingSeconds: Int) {
 /** Phase 2 & 3: Heat Up & Cool Down */
 @Composable
 private fun ActiveTimerContent(
-    preset: io.github.opendabby.data.Preset,
+    preset: Preset,
     isHeat: Boolean,
     remainingSeconds: Int,
     progress: Float,
@@ -339,7 +340,7 @@ private fun ActiveTimerContent(
 
 /** Phase 4: Done / Liftoff */
 @Composable
-private fun DoneContent(preset: io.github.opendabby.data.Preset) {
+private fun DoneContent(preset: Preset) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,

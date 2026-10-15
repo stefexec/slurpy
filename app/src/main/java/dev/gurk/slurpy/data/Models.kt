@@ -1,4 +1,4 @@
-package io.github.opendabby.data
+package dev.gurk.slurpy.data
 
 import java.util.UUID
 

@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    namespace = "io.github.opendabby"
+    namespace = "dev.gurk.slurpy"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "io.github.opendabby"
+        applicationId = "dev.gurk.slurpy"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     buildTypes {

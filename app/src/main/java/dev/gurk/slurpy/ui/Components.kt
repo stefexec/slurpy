@@ -1,4 +1,4 @@
-package io.github.opendabby.ui
+package dev.gurk.slurpy.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -39,11 +39,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.opendabby.R
+import dev.gurk.slurpy.R
 
 /** The ring logo inside a dark rounded tile. Reuses the launcher foreground vector. */
 @Composable
-fun DabbyLogo(size: Dp, modifier: Modifier = Modifier) {
+fun SlurpyLogo(size: Dp, modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .size(size)
@@ -53,7 +53,7 @@ fun DabbyLogo(size: Dp, modifier: Modifier = Modifier) {
     ) {
         Image(
             painter = painterResource(R.drawable.ic_launcher_foreground),
-            contentDescription = "Dabby",
+            contentDescription = "Slurpy",
             modifier = Modifier.requiredSize(size * 1.16f),
         )
     }
@@ -85,7 +85,7 @@ fun Stepper(value: String, onMinus: () -> Unit, onPlus: () -> Unit) {
             .width(134.dp)
             .height(40.dp)
             .clip(RoundedCornerShape(14.dp))
-            .background(dabby.stepper)
+            .background(slurpy.stepper)
             .border(1.dp, Hairline, RoundedCornerShape(14.dp)),
         verticalAlignment = Alignment.CenterVertically,
     ) {

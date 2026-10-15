@@ -1,4 +1,4 @@
-package io.github.opendabby.ui
+package dev.gurk.slurpy.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -70,11 +70,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.opendabby.AppViewModel
-import io.github.opendabby.data.AppTheme
-import io.github.opendabby.data.Session
-import io.github.opendabby.data.Sound
-import io.github.opendabby.data.TempUnit
+import dev.gurk.slurpy.AppViewModel
+import dev.gurk.slurpy.data.AppTheme
+import dev.gurk.slurpy.data.Session
+import dev.gurk.slurpy.data.Sound
+import dev.gurk.slurpy.data.TempUnit
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -123,7 +123,7 @@ fun SettingsScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(dabby.background)
+            .background(slurpy.background)
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
@@ -162,7 +162,7 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(18.dp))
-                        .background(dabby.surface)
+                        .background(slurpy.surface)
                         .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp)),
                 ) {
                     SettingsRow(
@@ -189,7 +189,7 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(18.dp))
-                        .background(dabby.surface)
+                        .background(slurpy.surface)
                         .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp)),
                 ) {
                     SettingsRow(
@@ -201,35 +201,15 @@ fun SettingsScreen(
                 }
             }
 
-            // PRO FEATURES Section (All Unlocked)
+            // FEATURES Section
             item {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    SectionLabel(text = "PRO FEATURES")
-                    Box(
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(Color(0xFF1E3A24))
-                            .padding(horizontal = 8.dp, vertical = 2.dp),
-                    ) {
-                        Text(
-                            text = "UNLOCKED",
-                            color = Color(0xFF6CCB5F),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.sp,
-                        )
-                    }
-                }
+                SectionLabel(text = "FEATURES")
                 Spacer(Modifier.height(8.dp))
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(18.dp))
-                        .background(dabby.surface)
+                        .background(slurpy.surface)
                         .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp)),
                 ) {
                     SettingsRow(
@@ -263,7 +243,7 @@ fun SettingsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(18.dp))
-                        .background(dabby.surface)
+                        .background(slurpy.surface)
                         .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp)),
                 ) {
                     SettingsRow(
@@ -287,22 +267,22 @@ fun SettingsScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Text(
-                            text = "Dabby Open Source",
+                            text = "Slurpy",
                             color = TextPrimary,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.Bold,
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            text = "Free, privacy-friendly Android dab timer clone with full Pro features included.",
+                            text = "Slurpy - Open Source Dabbing Timer\nFree, privacy-friendly & fully customizable.",
                             color = TextSecondary,
                             fontSize = 13.sp,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                         )
                         Spacer(Modifier.height(6.dp))
                         Text(
-                            text = "Version 1.0",
-                            color = dabby.accent,
+                            text = "Version 1.1.0",
+                            color = slurpy.accent,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Medium,
                         )
@@ -393,7 +373,7 @@ private fun SettingsRow(
                 .background(Color(0xFF222222)),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(icon, contentDescription = null, tint = dabby.accent, modifier = Modifier.size(18.dp))
+            Icon(icon, contentDescription = null, tint = slurpy.accent, modifier = Modifier.size(18.dp))
         }
 
         Spacer(Modifier.width(14.dp))
@@ -444,7 +424,7 @@ private fun SoundPickerDialog(
                         RadioButton(
                             selected = isSelected,
                             onClick = { onSelect(sound) },
-                            colors = RadioButtonDefaults.colors(selectedColor = dabby.accent),
+                            colors = RadioButtonDefaults.colors(selectedColor = slurpy.accent),
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
@@ -465,7 +445,7 @@ private fun SoundPickerDialog(
                                 Icon(
                                     imageVector = Icons.Filled.PlayArrow,
                                     contentDescription = "Preview",
-                                    tint = dabby.accent,
+                                    tint = slurpy.accent,
                                     modifier = Modifier.size(16.dp),
                                 )
                             }
@@ -579,7 +559,7 @@ private fun TempUnitPickerDialog(
                         RadioButton(
                             selected = isSelected,
                             onClick = { onSelectUnit(unit) },
-                            colors = RadioButtonDefaults.colors(selectedColor = dabby.accent),
+                            colors = RadioButtonDefaults.colors(selectedColor = slurpy.accent),
                         )
                         Spacer(Modifier.width(10.dp))
                         Text(
@@ -675,7 +655,7 @@ private fun HistoryScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(dabby.background)
+            .background(slurpy.background)
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
@@ -855,7 +835,7 @@ private fun HistoryScreen(
 
                     TextButton(
                         onClick = { undoDelete() },
-                        colors = ButtonDefaults.textButtonColors(contentColor = dabby.accent),
+                        colors = ButtonDefaults.textButtonColors(contentColor = slurpy.accent),
                     ) {
                         Text(
                             text = "UNDO",
@@ -945,7 +925,7 @@ private fun SwipeableSessionItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .offset { IntOffset(offsetX.value.roundToInt(), 0) }
-                .background(dabby.surface)
+                .background(slurpy.surface)
                 .border(1.dp, Color(0xFF262626), RoundedCornerShape(16.dp))
                 .pointerInput(session.id) {
                     detectHorizontalDragGestures(
@@ -1015,13 +995,13 @@ private fun StatCard(title: String, value: String, modifier: Modifier = Modifier
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(dabby.surface)
+            .background(slurpy.surface)
             .border(1.dp, Color(0xFF262626), RoundedCornerShape(16.dp))
             .padding(16.dp),
         contentAlignment = Alignment.Center,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(value, color = dabby.accent, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Text(value, color = slurpy.accent, fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
             Text(title, color = TextSecondary, fontSize = 13.sp)
         }
@@ -1131,7 +1111,7 @@ private fun DabsOverTimeCard(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
-            .background(dabby.surface)
+            .background(slurpy.surface)
             .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp))
             .padding(16.dp),
     ) {
@@ -1163,7 +1143,7 @@ private fun DabsOverTimeCard(
                     val isUp = trend > 0
                     val isDown = trend < 0
                     val badgeColor = when {
-                        isUp -> dabby.accent
+                        isUp -> slurpy.accent
                         isDown -> Color(0xFF56B6F2)
                         else -> TextSecondary
                     }
@@ -1248,10 +1228,10 @@ private fun DabsOverTimeCard(
                                     else -> 0.35f
                                 }
                                 Triple(
-                                    dabby.accent.copy(alpha = alpha),
+                                    slurpy.accent.copy(alpha = alpha),
                                     if (alpha > 0.5f) Color.Black else TextPrimary,
                                     if (day.isToday) Modifier.border(1.5.dp, Color.White, RoundedCornerShape(8.dp))
-                                    else Modifier.border(0.5.dp, dabby.accent.copy(alpha = 0.5f), RoundedCornerShape(8.dp)),
+                                    else Modifier.border(0.5.dp, slurpy.accent.copy(alpha = 0.5f), RoundedCornerShape(8.dp)),
                                 )
                             }
                             day.isToday -> Triple(
@@ -1305,11 +1285,11 @@ private fun DabsOverTimeCard(
                     Spacer(Modifier.width(4.dp))
                     Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(Color(0xFF181818)))
                     Spacer(Modifier.width(3.dp))
-                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(dabby.accent.copy(alpha = 0.35f)))
+                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(slurpy.accent.copy(alpha = 0.35f)))
                     Spacer(Modifier.width(3.dp))
-                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(dabby.accent.copy(alpha = 0.65f)))
+                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(slurpy.accent.copy(alpha = 0.65f)))
                     Spacer(Modifier.width(3.dp))
-                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(dabby.accent))
+                    Box(Modifier.size(8.dp).clip(RoundedCornerShape(2.dp)).background(slurpy.accent))
                     Spacer(Modifier.width(4.dp))
                     Text(text = "4+ dabs", color = TextSecondary, fontSize = 10.sp)
                 }
@@ -1334,7 +1314,7 @@ private fun WeeklyActivityChart(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(18.dp))
-            .background(dabby.surface)
+            .background(slurpy.surface)
             .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp))
             .padding(16.dp),
     ) {
@@ -1361,7 +1341,7 @@ private fun WeeklyActivityChart(
                         )
                         Text(
                             text = "${fullDayNames[peakDayIndex]} ($maxCount)",
-                            color = dabby.accent,
+                            color = slurpy.accent,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold,
                         )
@@ -1394,7 +1374,7 @@ private fun WeeklyActivityChart(
                         // Count number label on top of bar
                         Text(
                             text = if (count > 0) "$count" else "",
-                            color = if (isPeak) dabby.accent else TextSecondary,
+                            color = if (isPeak) slurpy.accent else TextSecondary,
                             fontSize = 11.sp,
                             fontWeight = if (isPeak) FontWeight.Bold else FontWeight.Medium,
                             modifier = Modifier.height(16.dp),
@@ -1420,15 +1400,15 @@ private fun WeeklyActivityChart(
                                         if (isPeak) {
                                             androidx.compose.ui.graphics.Brush.verticalGradient(
                                                 listOf(
-                                                    dabby.accent,
-                                                    dabby.accent.copy(alpha = 0.75f)
+                                                    slurpy.accent,
+                                                    slurpy.accent.copy(alpha = 0.75f)
                                                 )
                                             )
                                         } else if (count > 0) {
                                             androidx.compose.ui.graphics.Brush.verticalGradient(
                                                 listOf(
-                                                    dabby.accent.copy(alpha = 0.65f),
-                                                    dabby.accent.copy(alpha = 0.35f)
+                                                    slurpy.accent.copy(alpha = 0.65f),
+                                                    slurpy.accent.copy(alpha = 0.35f)
                                                 )
                                             )
                                         } else {
@@ -1459,7 +1439,7 @@ private fun WeeklyActivityChart(
                                     modifier = Modifier
                                         .size(3.dp)
                                         .clip(CircleShape)
-                                        .background(dabby.accent)
+                                        .background(slurpy.accent)
                                 )
                             }
                         }
@@ -1476,7 +1456,7 @@ private fun CleaningGuideScreen(onBack: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(dabby.background)
+            .background(slurpy.background)
             .statusBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
@@ -1559,7 +1539,7 @@ private fun GuideCard(step: String, title: String, description: String) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
-            .background(dabby.surface)
+            .background(slurpy.surface)
             .border(1.dp, Color(0xFF262626), RoundedCornerShape(16.dp))
             .padding(16.dp),
     ) {
@@ -1567,11 +1547,11 @@ private fun GuideCard(step: String, title: String, description: String) {
             modifier = Modifier
                 .size(32.dp)
                 .clip(CircleShape)
-                .background(dabby.accent.copy(alpha = 0.2f))
-                .border(1.dp, dabby.accent, CircleShape),
+                .background(slurpy.accent.copy(alpha = 0.2f))
+                .border(1.dp, slurpy.accent, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Text(step, color = dabby.accent, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            Text(step, color = slurpy.accent, fontSize = 15.sp, fontWeight = FontWeight.Bold)
         }
 
         Spacer(Modifier.width(14.dp))

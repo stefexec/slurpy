@@ -1,4 +1,4 @@
-package io.github.opendabby
+package dev.gurk.slurpy
 
 import android.app.Application
 import android.os.SystemClock
@@ -7,14 +7,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import io.github.opendabby.data.AppTheme
-import io.github.opendabby.data.DefaultPresets
-import io.github.opendabby.data.Preset
-import io.github.opendabby.data.Session
-import io.github.opendabby.data.Sound
-import io.github.opendabby.data.Storage
-import io.github.opendabby.data.TempUnit
-import io.github.opendabby.sound.SoundPlayer
+import dev.gurk.slurpy.data.AppTheme
+import dev.gurk.slurpy.data.DefaultPresets
+import dev.gurk.slurpy.data.Preset
+import dev.gurk.slurpy.data.Session
+import dev.gurk.slurpy.data.Sound
+import dev.gurk.slurpy.data.Storage
+import dev.gurk.slurpy.data.TempUnit
+import dev.gurk.slurpy.sound.SoundPlayer
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

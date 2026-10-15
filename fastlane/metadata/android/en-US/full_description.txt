@@ -1,0 +1,11 @@
+Slurpy is a free, privacy-friendly, open-source companion app and precision countdown timer for concentrates and quartz bangers.
+
+Features:
+• Precision Heating & Cooling Phases: High-resolution countdown timer with smooth visual arc progress and synthesized audio alert chimes.
+• Customizable Presets: Tailor heat-up and cool-down times, temperature ranges, names, and emojis. Reorder or reset anytime.
+• Celsius & Fahrenheit Support: Easily switch temperature units across all presets and steppers in settings.
+• Activity History & Trend Calendar: View logged sessions, all-time weekly distribution bar charts, and a compact 4-week activity heatmap with week-over-week trend insights.
+• Swipe to Delete: Manage session logs with swipe-to-reveal delete and a 5-second undo recovery notice.
+• Banger Cleaning Guide: Built-in step-by-step care and maintenance manual to preserve heat retention and flavor.
+• Multiple Dark Themes: Choose between Classic, Ember, Arctic, and Terp aesthetics.
+• 100% Offline & Private: No trackers, no ads, no internet permissions, no data collection.

@@ -1,4 +1,4 @@
-package io.github.opendabby
+package dev.gurk.slurpy
 
 import android.os.Bundle
 import android.view.WindowManager
@@ -18,10 +18,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import io.github.opendabby.ui.DabbyTheme
-import io.github.opendabby.ui.HomeScreen
-import io.github.opendabby.ui.SettingsScreen
-import io.github.opendabby.ui.TimerScreen
+import dev.gurk.slurpy.ui.HomeScreen
+import dev.gurk.slurpy.ui.SettingsScreen
+import dev.gurk.slurpy.ui.SlurpyTheme
+import dev.gurk.slurpy.ui.TimerScreen
 
 enum class Screen {
     Home, Settings
@@ -49,7 +49,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            DabbyTheme(theme = viewModel.theme) {
+            SlurpyTheme(theme = viewModel.theme) {
                 var currentScreen by remember { mutableStateOf(Screen.Home) }
 
                 if (timerState != null) {

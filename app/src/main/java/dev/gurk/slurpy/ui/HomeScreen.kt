@@ -1,4 +1,4 @@
-package io.github.opendabby.ui
+package dev.gurk.slurpy.ui
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
@@ -59,9 +59,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import io.github.opendabby.AppViewModel
-import io.github.opendabby.data.Preset
-import io.github.opendabby.data.TempUnit
+import dev.gurk.slurpy.AppViewModel
+import dev.gurk.slurpy.data.Preset
+import dev.gurk.slurpy.data.TempUnit
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -93,7 +93,7 @@ fun HomeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(dabby.background)
+            .background(slurpy.background)
             .statusBarsPadding()
             .imePadding()
     ) {
@@ -118,10 +118,10 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        DabbyLogo(size = 38.dp)
+                        SlurpyLogo(size = 38.dp)
                         Spacer(Modifier.width(12.dp))
                         Text(
-                            text = "DABBY",
+                            text = "SLURPY",
                             color = TextPrimary,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Bold,
@@ -257,7 +257,7 @@ private fun StartHeroCard(
     onStart: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val accent = dabby.accent
+    val accent = slurpy.accent
 
     Box(
         modifier = modifier
@@ -362,11 +362,11 @@ private fun PresetCard(
     modifier: Modifier = Modifier,
 ) {
     val borderColor by animateColorAsState(
-        if (isSelected) dabby.accent.copy(alpha = 0.75f) else Color(0xFF262626),
+        if (isSelected) slurpy.accent.copy(alpha = 0.75f) else Color(0xFF262626),
         label = "borderColor"
     )
     val bgColor by animateColorAsState(
-        if (isSelected) dabby.selectedCard else dabby.surface,
+        if (isSelected) slurpy.selectedCard else slurpy.surface,
         label = "bgColor"
     )
 
@@ -449,7 +449,7 @@ private fun PresetCard(
                 Icon(
                     imageVector = if (isExpanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
                     contentDescription = if (isExpanded) "Collapse" else "Expand",
-                    tint = if (isExpanded) dabby.accent else TextSecondary,
+                    tint = if (isExpanded) slurpy.accent else TextSecondary,
                     modifier = Modifier.size(20.dp),
                 )
             }
@@ -476,9 +476,9 @@ private fun PresetCard(
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedTextColor = TextPrimary,
                         unfocusedTextColor = TextPrimary,
-                        focusedBorderColor = dabby.accent,
+                        focusedBorderColor = slurpy.accent,
                         unfocusedBorderColor = Color(0xFF333333),
-                        cursorColor = dabby.accent,
+                        cursorColor = slurpy.accent,
                     ),
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -692,10 +692,10 @@ private fun EmojiPickerDialog(
                             modifier = Modifier
                                 .size(44.dp)
                                 .clip(RoundedCornerShape(12.dp))
-                                .background(if (isSelected) dabby.accent.copy(alpha = 0.25f) else Color(0xFF282828))
+                                .background(if (isSelected) slurpy.accent.copy(alpha = 0.25f) else Color(0xFF282828))
                                 .border(
                                     width = if (isSelected) 1.5.dp else 1.dp,
-                                    color = if (isSelected) dabby.accent else Color(0xFF333333),
+                                    color = if (isSelected) slurpy.accent else Color(0xFF333333),
                                     shape = RoundedCornerShape(12.dp)
                                 )
                                 .clickable {
