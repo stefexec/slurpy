@@ -70,10 +70,11 @@ class Storage(context: Context) {
     )
 
     private fun Session.toJson() = JSONObject()
-        .put("time", timestamp).put("name", presetName).put("emoji", emoji)
+        .put("id", id).put("time", timestamp).put("name", presetName).put("emoji", emoji)
         .put("heat", heatSeconds).put("cool", coolSeconds)
 
     private fun JSONObject.toSession() = Session(
+        id = optString("id").takeIf { it.isNotBlank() } ?: java.util.UUID.randomUUID().toString(),
         timestamp = getLong("time"),
         presetName = getString("name"),
         emoji = getString("emoji"),

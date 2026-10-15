@@ -127,6 +127,23 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         storage.saveSessions(sessions)
     }
 
+    fun deleteSession(sessionId: String): Pair<Session, Int>? {
+        val index = sessions.indexOfFirst { it.id == sessionId }
+        if (index < 0) return null
+        val target = sessions[index]
+        sessions = sessions.filterIndexed { i, _ -> i != index }
+        storage.saveSessions(sessions)
+        return Pair(target, index)
+    }
+
+    fun restoreSession(session: Session, index: Int = 0) {
+        val list = sessions.toMutableList()
+        val insertIndex = index.coerceIn(0, list.size)
+        list.add(insertIndex, session)
+        sessions = list
+        storage.saveSessions(sessions)
+    }
+
     // ---- Timer ----
 
     fun startTimer() = runTimer(selectedPreset, Phase.GetReady)

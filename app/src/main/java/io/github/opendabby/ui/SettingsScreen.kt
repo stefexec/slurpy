@@ -1,16 +1,29 @@
 package io.github.opendabby.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -23,6 +36,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.CleaningServices
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
@@ -30,6 +44,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
@@ -39,15 +54,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.opendabby.AppViewModel
@@ -59,6 +79,10 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 enum class SettingsSubScreen {
     None, History, CleaningGuide
@@ -80,6 +104,8 @@ fun SettingsScreen(
         SettingsSubScreen.History -> {
             HistoryScreen(
                 sessions = viewModel.sessions,
+                onDeleteSession = { viewModel.deleteSession(it) },
+                onRestoreSession = { session, index -> viewModel.restoreSession(session, index) },
                 onClearHistory = { viewModel.clearHistory() },
                 onBack = { subScreen = SettingsSubScreen.None },
             )
@@ -575,10 +601,23 @@ private fun TempUnitPickerDialog(
 @Composable
 private fun HistoryScreen(
     sessions: List<Session>,
+    onDeleteSession: (String) -> Pair<Session, Int>?,
+    onRestoreSession: (Session, Int) -> Unit,
     onClearHistory: () -> Unit,
     onBack: () -> Unit,
 ) {
     var showClearConfirm by remember { mutableStateOf(false) }
+    var deletedInfo by remember { mutableStateOf<Pair<Session, Int>?>(null) }
+    var secondsRemaining by remember { mutableIntStateOf(5) }
+    val coroutineScope = rememberCoroutineScope()
+    var timerJob by remember { mutableStateOf<Job?>(null) }
+
+    fun undoDelete() {
+        val info = deletedInfo ?: return
+        timerJob?.cancel()
+        deletedInfo = null
+        onRestoreSession(info.first, info.second)
+    }
 
     val totalDabs = sessions.size
     val totalSeconds = sessions.sumOf { it.heatSeconds + it.coolSeconds }
@@ -655,6 +694,7 @@ private fun HistoryScreen(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(14.dp),
+            contentPadding = PaddingValues(bottom = 90.dp),
         ) {
             // Header
             item {
@@ -761,31 +801,104 @@ private fun HistoryScreen(
                     }
                 }
             } else {
-                items(sessions) { session ->
+                items(sessions, key = { it.id }) { session ->
+                    SwipeableSessionItem(
+                        session = session,
+                        dateFormat = dateFormat,
+                        onDelete = {
+                            val info = onDeleteSession(session.id)
+                            if (info != null) {
+                                deletedInfo = info
+                                secondsRemaining = 5
+                                timerJob?.cancel()
+                                timerJob = coroutineScope.launch {
+                                    for (sec in 5 downTo 1) {
+                                        secondsRemaining = sec
+                                        delay(1000L)
+                                    }
+                                    deletedInfo = null
+                                }
+                            }
+                        },
+                    )
+                }
+            }
+        }
+
+        // Undo Notification Banner (Slides in from bottom with 5-second countdown & tap to undo)
+        AnimatedVisibility(
+            visible = deletedInfo != null,
+            enter = slideInVertically(
+                initialOffsetY = { it + 60 },
+                animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+            ) + fadeIn(),
+            exit = slideOutVertically(
+                targetOffsetY = { it + 60 },
+                animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+            ) + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 16.dp, vertical = 20.dp),
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable { undoDelete() },
+                color = Color(0xFF1E1E1E),
+                border = BorderStroke(1.dp, Color(0xFF333333)),
+                shadowElevation = 8.dp,
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(dabby.surface)
-                            .border(1.dp, Color(0xFF262626), RoundedCornerShape(16.dp))
-                            .padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f),
                     ) {
-                        Text(session.emoji, fontSize = 24.sp)
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(Danger.copy(alpha = 0.2f)),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Delete,
+                                contentDescription = null,
+                                tint = Danger,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
                         Spacer(Modifier.width(12.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(session.presetName, color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                        Column {
                             Text(
-                                text = dateFormat.format(Date(session.timestamp)),
+                                text = "Dab entry deleted",
+                                color = TextPrimary,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Text(
+                                text = "Tap to undo (${secondsRemaining}s)",
                                 color = TextSecondary,
                                 fontSize = 12.sp,
                             )
                         }
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            TimePill(seconds = session.heatSeconds, heat = true)
-                            Spacer(Modifier.width(6.dp))
-                            TimePill(seconds = session.coolSeconds, heat = false)
-                        }
+                    }
+
+                    TextButton(
+                        onClick = { undoDelete() },
+                        colors = ButtonDefaults.textButtonColors(contentColor = dabby.accent),
+                    ) {
+                        Text(
+                            text = "UNDO",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                        )
                     }
                 }
             }
@@ -802,6 +915,134 @@ private fun HistoryScreen(
                 },
                 onDismiss = { showClearConfirm = false },
             )
+        }
+    }
+}
+
+/** Swipeable Session Pill with revealed Delete button on left swipe */
+@Composable
+private fun SwipeableSessionItem(
+    session: Session,
+    dateFormat: SimpleDateFormat,
+    onDelete: () -> Unit,
+) {
+    val density = LocalDensity.current
+    val buttonWidthDp = 84.dp
+    val buttonWidthPx = with(density) { buttonWidthDp.toPx() }
+    val maxDragPx = with(density) { 160.dp.toPx() }
+
+    val offsetX = remember { Animatable(0f) }
+    val coroutineScope = rememberCoroutineScope()
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp)),
+    ) {
+        // Red Delete background revealed when swiping left
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(Danger),
+            contentAlignment = Alignment.CenterEnd,
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(buttonWidthDp)
+                    .fillMaxHeight()
+                    .clickable {
+                        coroutineScope.launch { offsetX.snapTo(0f) }
+                        onDelete()
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "Delete",
+                        tint = Color.White,
+                        modifier = Modifier.size(24.dp),
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = "Delete",
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+        }
+
+        // Foreground session pill
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset { IntOffset(offsetX.value.roundToInt(), 0) }
+                .background(dabby.surface)
+                .border(1.dp, Color(0xFF262626), RoundedCornerShape(16.dp))
+                .pointerInput(session.id) {
+                    detectHorizontalDragGestures(
+                        onDragEnd = {
+                            coroutineScope.launch {
+                                val current = offsetX.value
+                                when {
+                                    current < -maxDragPx * 0.85f -> {
+                                        offsetX.animateTo(-with(density) { 400.dp.toPx() })
+                                        onDelete()
+                                    }
+                                    current < -buttonWidthPx / 2f -> {
+                                        offsetX.animateTo(-buttonWidthPx, spring(stiffness = Spring.StiffnessMediumLow))
+                                    }
+                                    else -> {
+                                        offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
+                                    }
+                                }
+                            }
+                        },
+                        onHorizontalDrag = { change, dragAmount ->
+                            change.consume()
+                            coroutineScope.launch {
+                                val newOffset = (offsetX.value + dragAmount).coerceIn(-maxDragPx, 0f)
+                                offsetX.snapTo(newOffset)
+                            }
+                        },
+                    )
+                }
+                .clickable(
+                    enabled = offsetX.value < -10f,
+                    onClick = {
+                        coroutineScope.launch {
+                            offsetX.animateTo(0f, spring(stiffness = Spring.StiffnessMediumLow))
+                        }
+                    },
+                )
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(session.emoji, fontSize = 24.sp)
+            Spacer(Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = session.presetName,
+                    color = TextPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text = dateFormat.format(Date(session.timestamp)),
+                    color = TextSecondary,
+                    fontSize = 12.sp,
+                )
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TimePill(seconds = session.heatSeconds, heat = true)
+                Spacer(Modifier.width(6.dp))
+                TimePill(seconds = session.coolSeconds, heat = false)
+            }
         }
     }
 }

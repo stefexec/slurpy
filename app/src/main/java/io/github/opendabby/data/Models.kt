@@ -67,6 +67,7 @@ val DefaultPresets = listOf(
 
 /** A completed session, recorded when the cool-down finishes. */
 data class Session(
+    val id: String = UUID.randomUUID().toString(),
     val timestamp: Long,
     val presetName: String,
     val emoji: String,
