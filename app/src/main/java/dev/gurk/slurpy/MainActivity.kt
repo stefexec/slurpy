@@ -52,6 +52,12 @@ class MainActivity : ComponentActivity() {
             SlurpyTheme(theme = viewModel.theme) {
                 var currentScreen by remember { mutableStateOf(Screen.Home) }
 
+                if (!viewModel.hasSeenSupportPrompt) {
+                    dev.gurk.slurpy.ui.SupportDialog(
+                        onDismiss = { viewModel.dismissSupportPrompt() }
+                    )
+                }
+
                 if (timerState != null) {
                     BackHandler {
                         viewModel.stopTimer()

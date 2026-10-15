@@ -52,6 +52,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         private set
     var tempUnit by mutableStateOf(storage.tempUnit)
         private set
+    var hasSeenSupportPrompt by mutableStateOf(storage.hasSeenSupportPrompt)
+        private set
     var sessions by mutableStateOf(storage.loadSessions())
         private set
     var timer by mutableStateOf<TimerState?>(null)
@@ -131,6 +133,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         if (enabled) {
             haptics.pulse()
         }
+    }
+
+    fun dismissSupportPrompt() {
+        hasSeenSupportPrompt = true
+        storage.hasSeenSupportPrompt = true
     }
 
     fun previewSound(sound: Sound) = sounds.play(sound)

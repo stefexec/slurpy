@@ -37,6 +37,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.CleaningServices
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
@@ -102,6 +103,7 @@ fun SettingsScreen(
     var showThemeDialog by remember { mutableStateOf(false) }
     var showTempUnitDialog by remember { mutableStateOf(false) }
     var showResetPresetsDialog by remember { mutableStateOf(false) }
+    var showSupportDialog by remember { mutableStateOf(false) }
 
     when (subScreen) {
         SettingsSubScreen.History -> {
@@ -246,6 +248,26 @@ fun SettingsScreen(
                 }
             }
 
+            // SUPPORT THE DEVELOPER Section
+            item {
+                SectionLabel(text = "SUPPORT")
+                Spacer(Modifier.height(8.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(slurpy.surface)
+                        .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp)),
+                ) {
+                    SettingsRow(
+                        icon = Icons.Filled.Favorite,
+                        title = "Support the Developer",
+                        subtitle = "Crypto Wallets (BTC, ETH, LTC, XMR) & Coffee 💖",
+                        onClick = { showSupportDialog = true },
+                    )
+                }
+            }
+
             // SUPPORT & MANAGEMENT Section
             item {
                 SectionLabel(text = "PRESETS & APP")
@@ -317,7 +339,31 @@ fun SettingsScreen(
                                 fontSize = 12.sp,
                             )
                         }
-                        Spacer(Modifier.height(6.dp))
+                        Spacer(Modifier.height(10.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFF1E1E24))
+                                .border(1.dp, Color(0xFF2C2C34), RoundedCornerShape(12.dp))
+                                .clickable { showSupportDialog = true }
+                                .padding(horizontal = 14.dp, vertical = 8.dp),
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = null,
+                                tint = Color(0xFFFF4081),
+                                modifier = Modifier.size(15.dp),
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = "Support the Developer 💖",
+                                color = TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Medium,
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             text = "Version 1.1.0",
                             color = TextSecondary.copy(alpha = 0.5f),
@@ -385,6 +431,13 @@ fun SettingsScreen(
                     showResetPresetsDialog = false
                 },
                 onDismiss = { showResetPresetsDialog = false },
+            )
+        }
+
+        // Support / About Dialog
+        if (showSupportDialog) {
+            SupportDialog(
+                onDismiss = { showSupportDialog = false },
             )
         }
     }
