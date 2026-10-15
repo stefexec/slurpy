@@ -154,6 +154,40 @@ fun SettingsScreen(
                 }
             }
 
+            // FEATURES Section
+            item {
+                SectionLabel(text = "FEATURES")
+                Spacer(Modifier.height(8.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(slurpy.surface)
+                        .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp)),
+                ) {
+                    SettingsRow(
+                        icon = Icons.Filled.History,
+                        title = "Session History & Stats",
+                        subtitle = "${viewModel.sessions.size} dabs logged",
+                        onClick = { subScreen = SettingsSubScreen.History },
+                    )
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242424)))
+                    SettingsRow(
+                        icon = Icons.Filled.Palette,
+                        title = "Theme",
+                        subtitle = "${viewModel.theme.emoji} ${viewModel.theme.label}",
+                        onClick = { showThemeDialog = true },
+                    )
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242424)))
+                    SettingsRow(
+                        icon = Icons.Filled.CleaningServices,
+                        title = "Banger Cleaning Guide",
+                        subtitle = "Maintenance & best practices",
+                        onClick = { subScreen = SettingsSubScreen.CleaningGuide },
+                    )
+                }
+            }
+
             // SOUND Section
             item {
                 SectionLabel(text = "SOUND")
@@ -197,40 +231,6 @@ fun SettingsScreen(
                         title = "Temperature Unit",
                         subtitle = "${viewModel.tempUnit.label} (${viewModel.tempUnit.symbol})",
                         onClick = { showTempUnitDialog = true },
-                    )
-                }
-            }
-
-            // FEATURES Section
-            item {
-                SectionLabel(text = "FEATURES")
-                Spacer(Modifier.height(8.dp))
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(18.dp))
-                        .background(slurpy.surface)
-                        .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp)),
-                ) {
-                    SettingsRow(
-                        icon = Icons.Filled.History,
-                        title = "Session History & Stats",
-                        subtitle = "${viewModel.sessions.size} dabs logged",
-                        onClick = { subScreen = SettingsSubScreen.History },
-                    )
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242424)))
-                    SettingsRow(
-                        icon = Icons.Filled.Palette,
-                        title = "Theme",
-                        subtitle = "${viewModel.theme.emoji} ${viewModel.theme.label}",
-                        onClick = { showThemeDialog = true },
-                    )
-                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242424)))
-                    SettingsRow(
-                        icon = Icons.Filled.CleaningServices,
-                        title = "Banger Cleaning Guide",
-                        subtitle = "Maintenance & best practices",
-                        onClick = { subScreen = SettingsSubScreen.CleaningGuide },
                     )
                 }
             }
