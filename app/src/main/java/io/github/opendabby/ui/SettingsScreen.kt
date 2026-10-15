@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,6 +54,7 @@ import io.github.opendabby.AppViewModel
 import io.github.opendabby.data.AppTheme
 import io.github.opendabby.data.Session
 import io.github.opendabby.data.Sound
+import io.github.opendabby.data.TempUnit
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -71,6 +73,7 @@ fun SettingsScreen(
     var subScreen by remember { mutableStateOf(SettingsSubScreen.None) }
     var soundDialogTarget by remember { mutableStateOf<String?>(null) } // "heat" or "cool"
     var showThemeDialog by remember { mutableStateOf(false) }
+    var showTempUnitDialog by remember { mutableStateOf(false) }
     var showResetPresetsDialog by remember { mutableStateOf(false) }
 
     when (subScreen) {
@@ -148,6 +151,26 @@ fun SettingsScreen(
                         title = "Cool Down Sound",
                         subtitle = viewModel.coolSound.label,
                         onClick = { soundDialogTarget = "cool" },
+                    )
+                }
+            }
+
+            // PREFERENCES Section (Celsius / Fahrenheit)
+            item {
+                SectionLabel(text = "PREFERENCES")
+                Spacer(Modifier.height(8.dp))
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(dabby.surface)
+                        .border(1.dp, Color(0xFF262626), RoundedCornerShape(18.dp)),
+                ) {
+                    SettingsRow(
+                        icon = Icons.Filled.Thermostat,
+                        title = "Temperature Unit",
+                        subtitle = "${viewModel.tempUnit.label} (${viewModel.tempUnit.symbol})",
+                        onClick = { showTempUnitDialog = true },
                     )
                 }
             }
@@ -292,6 +315,18 @@ fun SettingsScreen(
                     showThemeDialog = false
                 },
                 onDismiss = { showThemeDialog = false },
+            )
+        }
+
+        // Temperature Unit Selection Dialog
+        if (showTempUnitDialog) {
+            TempUnitPickerDialog(
+                currentUnit = viewModel.tempUnit,
+                onSelectUnit = { unit ->
+                    viewModel.updateTempUnit(unit)
+                    showTempUnitDialog = false
+                },
+                onDismiss = { showTempUnitDialog = false },
             )
         }
 
@@ -475,6 +510,61 @@ private fun ThemePickerDialog(
                         )
                     }
                     Spacer(Modifier.height(8.dp))
+                }
+            }
+        }
+    }
+}
+
+/** Temperature Unit Picker Dialog (Celsius vs Fahrenheit) */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TempUnitPickerDialog(
+    currentUnit: TempUnit,
+    onSelectUnit: (TempUnit) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    BasicAlertDialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(20.dp),
+            color = Color(0xFF1E1E1E),
+            modifier = Modifier.padding(16.dp),
+        ) {
+            Column(modifier = Modifier.padding(20.dp)) {
+                Text(
+                    text = "Temperature Unit",
+                    color = TextPrimary,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+
+                TempUnit.entries.forEach { unit ->
+                    val isSelected = unit == currentUnit
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(if (isSelected) Color(0xFF2A2A2A) else Color.Transparent)
+                            .clickable { onSelectUnit(unit) }
+                            .padding(12.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        RadioButton(
+                            selected = isSelected,
+                            onClick = { onSelectUnit(unit) },
+                            colors = RadioButtonDefaults.colors(selectedColor = dabby.accent),
+                        )
+                        Spacer(Modifier.width(10.dp))
+                        Text(
+                            text = "${unit.label} (${unit.symbol})",
+                            color = TextPrimary,
+                            fontSize = 16.sp,
+                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                    Spacer(Modifier.height(4.dp))
                 }
             }
         }
@@ -926,7 +1016,7 @@ private fun CleaningGuideScreen(onBack: () -> Unit) {
                 GuideCard(
                     step = "1",
                     title = "Dry Swab Immediately",
-                    description = "Right after taking your dab while the banger is still warm (~200°F–300°F), use a dry cotton swab (Q-tip) to mop up any leftover oil puddle. Rotate the swab around the floor and corners.",
+                    description = "Right after taking your dab while the banger is still warm (~200°F–300°F / ~95°C–150°C), use a dry cotton swab (Q-tip) to mop up any leftover oil puddle. Rotate the swab around the floor and corners.",
                 )
             }
 
@@ -934,7 +1024,7 @@ private fun CleaningGuideScreen(onBack: () -> Unit) {
                 GuideCard(
                     step = "2",
                     title = "Alcohol Swab (ISO)",
-                    description = "Dip a second swab into 91% or 99% isopropyl alcohol. Only apply after the quartz has cooled below 200°F to prevent thermal shock. Wipe down the entire interior until crystal clear.",
+                    description = "Dip a second swab into 91% or 99% isopropyl alcohol. Only apply after the quartz has cooled below 200°F / 95°C to prevent thermal shock. Wipe down the entire interior until crystal clear.",
                 )
             }
 

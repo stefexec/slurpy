@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.opendabby.AppViewModel
 import io.github.opendabby.data.Preset
+import io.github.opendabby.data.TempUnit
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -163,6 +164,7 @@ fun HomeScreen(
                         preset = preset,
                         isSelected = isSelected,
                         isExpanded = isExpanded,
+                        tempUnit = viewModel.tempUnit,
                         onSelect = {
                             viewModel.select(preset.id)
                         },
@@ -350,6 +352,7 @@ private fun PresetCard(
     preset: Preset,
     isSelected: Boolean,
     isExpanded: Boolean,
+    tempUnit: TempUnit = TempUnit.Fahrenheit,
     onSelect: () -> Unit,
     onToggleExpand: () -> Unit,
     onPickEmoji: () -> Unit,
@@ -376,7 +379,6 @@ private fun PresetCard(
             .clickable(onClick = onSelect)
             .padding(14.dp)
     ) {
-        // Collapsed Top Row
         // Collapsed Top Row
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -420,7 +422,7 @@ private fun PresetCard(
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
-                    text = preset.tempRange,
+                    text = preset.tempRange(tempUnit),
                     color = TextSecondary,
                     fontSize = 13.sp,
                     maxLines = 1,
@@ -485,14 +487,14 @@ private fun PresetCard(
                 EditorRow(
                     emoji = "🌡️",
                     label = "Temp Low",
-                    stepperValue = "${preset.tempLow}°",
+                    stepperValue = tempUnit.toDisplayValue(preset.tempLow),
                     onMinus = {
-                        val next = (preset.tempLow - Preset.TEMP_STEP).coerceAtLeast(Preset.TEMP_MIN)
-                        onChangePreset(preset.copy(tempLow = minOf(next, preset.tempHigh)))
+                        val nextF = stepTemp(preset.tempLow, isPlus = false, isLow = true, otherF = preset.tempHigh, unit = tempUnit)
+                        onChangePreset(preset.copy(tempLow = nextF))
                     },
                     onPlus = {
-                        val next = (preset.tempLow + Preset.TEMP_STEP).coerceAtMost(preset.tempHigh)
-                        onChangePreset(preset.copy(tempLow = next))
+                        val nextF = stepTemp(preset.tempLow, isPlus = true, isLow = true, otherF = preset.tempHigh, unit = tempUnit)
+                        onChangePreset(preset.copy(tempLow = nextF))
                     },
                 )
 
@@ -500,14 +502,14 @@ private fun PresetCard(
                 EditorRow(
                     emoji = "🌡️",
                     label = "Temp High",
-                    stepperValue = "${preset.tempHigh}°",
+                    stepperValue = tempUnit.toDisplayValue(preset.tempHigh),
                     onMinus = {
-                        val next = (preset.tempHigh - Preset.TEMP_STEP).coerceAtLeast(preset.tempLow)
-                        onChangePreset(preset.copy(tempHigh = next))
+                        val nextF = stepTemp(preset.tempHigh, isPlus = false, isLow = false, otherF = preset.tempLow, unit = tempUnit)
+                        onChangePreset(preset.copy(tempHigh = nextF))
                     },
                     onPlus = {
-                        val next = (preset.tempHigh + Preset.TEMP_STEP).coerceAtMost(Preset.TEMP_MAX)
-                        onChangePreset(preset.copy(tempHigh = next))
+                        val nextF = stepTemp(preset.tempHigh, isPlus = true, isLow = false, otherF = preset.tempLow, unit = tempUnit)
+                        onChangePreset(preset.copy(tempHigh = nextF))
                     },
                 )
 
@@ -582,6 +584,20 @@ private fun PresetCard(
                 }
             }
         }
+    }
+}
+
+private fun stepTemp(currentF: Int, isPlus: Boolean, isLow: Boolean, otherF: Int, unit: TempUnit): Int {
+    return if (unit == TempUnit.Fahrenheit) {
+        val next = if (isPlus) currentF + Preset.TEMP_STEP else currentF - Preset.TEMP_STEP
+        if (isLow) next.coerceIn(Preset.TEMP_MIN, otherF)
+        else next.coerceIn(otherF, Preset.TEMP_MAX)
+    } else {
+        val currentC = TempUnit.fahrenheitToCelsius(currentF)
+        val otherC = TempUnit.fahrenheitToCelsius(otherF)
+        val nextC = if (isPlus) currentC + 10 else currentC - 10
+        val clampedC = if (isLow) nextC.coerceIn(40, otherC) else nextC.coerceIn(otherC, 550)
+        TempUnit.celsiusToFahrenheit(clampedC)
     }
 }
 

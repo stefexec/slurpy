@@ -45,6 +45,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         private set
     var theme by mutableStateOf(storage.theme)
         private set
+    var tempUnit by mutableStateOf(storage.tempUnit)
+        private set
     var sessions by mutableStateOf(storage.loadSessions())
         private set
     var timer by mutableStateOf<TimerState?>(null)
@@ -111,6 +113,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun updateTheme(value: AppTheme) {
         theme = value
         storage.theme = value
+    }
+
+    fun updateTempUnit(unit: TempUnit) {
+        tempUnit = unit
+        storage.tempUnit = unit
     }
 
     fun previewSound(sound: Sound) = sounds.play(sound)

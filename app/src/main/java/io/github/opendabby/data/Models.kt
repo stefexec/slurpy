@@ -13,7 +13,7 @@ data class Preset(
     val coolSeconds: Int,
 ) {
     val displayName: String get() = name.ifBlank { "Untitled" }
-    val tempRange: String get() = "$tempLow–$tempHigh°F"
+    fun tempRange(unit: TempUnit = TempUnit.Fahrenheit): String = unit.toRange(tempLow, tempHigh)
 
     companion object {
         const val TEMP_STEP = 25
@@ -28,6 +28,31 @@ data class Preset(
             name = "New Preset", emoji = "🔥",
             tempLow = 400, tempHigh = 450, heatSeconds = 30, coolSeconds = 45,
         )
+    }
+}
+
+enum class TempUnit(val label: String, val symbol: String) {
+    Fahrenheit("Fahrenheit", "°F"),
+    Celsius("Celsius", "°C");
+
+    fun toDisplay(fahrenheit: Int): String = when (this) {
+        Fahrenheit -> "$fahrenheit°F"
+        Celsius -> "${fahrenheitToCelsius(fahrenheit)}°C"
+    }
+
+    fun toRange(lowF: Int, highF: Int): String = when (this) {
+        Fahrenheit -> "$lowF–$highF°F"
+        Celsius -> "${fahrenheitToCelsius(lowF)}–${fahrenheitToCelsius(highF)}°C"
+    }
+
+    fun toDisplayValue(fahrenheit: Int): String = when (this) {
+        Fahrenheit -> "$fahrenheit°"
+        Celsius -> "${fahrenheitToCelsius(fahrenheit)}°"
+    }
+
+    companion object {
+        fun fahrenheitToCelsius(f: Int): Int = Math.round((f - 32) * 5.0 / 9.0).toInt()
+        fun celsiusToFahrenheit(c: Int): Int = Math.round(c * 9.0 / 5.0 + 32.0).toInt()
     }
 }
 
