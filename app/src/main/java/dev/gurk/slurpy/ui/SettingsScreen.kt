@@ -268,34 +268,61 @@ fun SettingsScreen(
 
             // About Footer Card
             item {
+                val uriHandler = androidx.compose.ui.platform.LocalUriHandler.current
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(18.dp))
                         .background(Color(0xFF141414))
                         .border(1.dp, Color(0xFF222222), RoundedCornerShape(18.dp))
-                        .padding(16.dp),
+                        .padding(18.dp),
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
                         Text(
                             text = "Slurpy",
                             color = TextPrimary,
-                            fontSize = 17.sp,
+                            fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                         )
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            text = "Slurpy - Open Source Dabbing Timer\nFree, privacy-friendly & fully customizable.",
+                            text = "Open Source Dabbing Timer\nFree, privacy-friendly & fully customizable.",
                             color = TextSecondary,
                             fontSize = 13.sp,
                             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                         )
+                        Spacer(Modifier.height(10.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .clickable { uriHandler.openUri("https://github.com/stefexec") }
+                                .padding(horizontal = 10.dp, vertical = 6.dp),
+                        ) {
+                            Text(
+                                text = "Created by ",
+                                color = TextSecondary,
+                                fontSize = 13.sp,
+                            )
+                            Text(
+                                text = "Gurkenwerfer",
+                                color = slurpy.accent,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                text = "· GitHub ↗",
+                                color = slurpy.accent,
+                                fontSize = 12.sp,
+                            )
+                        }
                         Spacer(Modifier.height(6.dp))
                         Text(
                             text = "Version 1.1.0",
-                            color = slurpy.accent,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Medium,
+                            color = TextSecondary.copy(alpha = 0.5f),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Normal,
                         )
                     }
                 }
