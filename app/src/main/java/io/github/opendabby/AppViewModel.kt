@@ -60,11 +60,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         storage.selectedPresetId = id
     }
 
-    fun updatePreset(preset: Preset) = setPresets(presets.map { if (it.id == preset.id) preset else it })
+    fun updatePreset(preset: Preset) = persistPresets(presets.map { if (it.id == preset.id) preset else it })
 
     fun addPreset(): Preset {
         val preset = Preset.new()
-        setPresets(presets + preset)
+        persistPresets(presets + preset)
         select(preset.id)
         return preset
     }
@@ -75,7 +75,7 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val index = presets.indexOfFirst { it.id == id }
         if (index < 0) return
         val remaining = presets.filterNot { it.id == id }
-        setPresets(remaining)
+        persistPresets(remaining)
         if (selectedId == id) select(remaining[(index - 1).coerceAtLeast(0)].id)
     }
 
@@ -83,32 +83,32 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         val from = presets.indexOfFirst { it.id == fromId }
         val to = presets.indexOfFirst { it.id == toId }
         if (from < 0 || to < 0 || from == to) return
-        setPresets(presets.toMutableList().apply { add(to, removeAt(from)) })
+        persistPresets(presets.toMutableList().apply { add(to, removeAt(from)) })
     }
 
     fun resetPresets() {
-        setPresets(DefaultPresets)
+        persistPresets(DefaultPresets)
         select(DefaultPresets.first().id)
     }
 
-    private fun setPresets(list: List<Preset>) {
+    private fun persistPresets(list: List<Preset>) {
         presets = list
         storage.savePresets(list)
     }
 
     // ---- Settings ----
 
-    fun setHeatSound(sound: Sound) {
+    fun updateHeatSound(sound: Sound) {
         heatSound = sound
         storage.heatSound = sound
     }
 
-    fun setCoolSound(sound: Sound) {
+    fun updateCoolSound(sound: Sound) {
         coolSound = sound
         storage.coolSound = sound
     }
 
-    fun setTheme(value: AppTheme) {
+    fun updateTheme(value: AppTheme) {
         theme = value
         storage.theme = value
     }
