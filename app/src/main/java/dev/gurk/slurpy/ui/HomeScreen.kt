@@ -266,9 +266,9 @@ private fun StartHeroCard(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF221614),
-                        Color(0xFF181211),
-                        Color(0xFF14100F),
+                        accent.copy(alpha = 0.25f),
+                        slurpy.selectedCard,
+                        slurpy.surface,
                     )
                 )
             )

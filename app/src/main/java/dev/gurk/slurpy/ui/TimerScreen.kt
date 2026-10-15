@@ -198,7 +198,7 @@ private fun GetReadyContent(remainingSeconds: Int) {
     ) {
         Text(
             text = "GET READY",
-            color = TextSecondary,
+            color = slurpy.accent,
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             letterSpacing = 4.sp,
@@ -210,13 +210,13 @@ private fun GetReadyContent(remainingSeconds: Int) {
                 .size(160.dp)
                 .scale(scale)
                 .clip(CircleShape)
-                .background(Color(0xFF1E1715))
-                .border(2.dp, HeatColor.copy(alpha = 0.5f), CircleShape),
+                .background(slurpy.selectedCard)
+                .border(2.dp, slurpy.accent.copy(alpha = 0.6f), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = "${remainingSeconds.coerceAtLeast(1)}",
-                color = HeatColor,
+                color = slurpy.accent,
                 fontSize = 72.sp,
                 fontWeight = FontWeight.Bold,
             )
