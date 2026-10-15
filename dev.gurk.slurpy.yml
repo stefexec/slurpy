@@ -3,13 +3,13 @@ Categories:
 License: GPL-3.0-only
 AuthorName: Gurkenwerfer
 AuthorWebSite: https://github.com/stefexec
-SourceCode: https://github.com/stefexec/slurpy
-IssueTracker: https://github.com/stefexec/slurpy/issues
+SourceCode: https://gitlab.com/gurkenwerfer/slurpy
+IssueTracker: https://gitlab.com/gurkenwerfer/slurpy/-/issues
 
 AutoName: Slurpy
 
 RepoType: git
-Repo: https://github.com/stefexec/slurpy.git
+Repo: https://gitlab.com/gurkenwerfer/slurpy.git
 
 Builds:
   - versionName: 1.1.0
