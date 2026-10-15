@@ -9,31 +9,31 @@
 
     <!-- Ambient Orange Glow (LEFT side) -->
     <path
-        android:pathData="M54,79 A24,24 0 0,1 33.2,43"
+        android:pathData="M54,79 A24,24 0 0,1 38.7,36.5"
         android:strokeWidth="10"
         android:strokeColor="#1FFF5510"
         android:strokeLineCap="round" />
     <path
-        android:pathData="M54,79 A24,24 0 0,1 33.2,43"
+        android:pathData="M54,79 A24,24 0 0,1 38.7,36.5"
         android:strokeWidth="6"
         android:strokeColor="#40FF5510"
         android:strokeLineCap="round" />
 
     <!-- Ambient Blue Glow (RIGHT side) -->
     <path
-        android:pathData="M54,79 A24,24 0 0,0 74.8,43"
+        android:pathData="M54,79 A24,24 0 0,0 72.7,40"
         android:strokeWidth="10"
         android:strokeColor="#1F4FA8EE"
         android:strokeLineCap="round" />
     <path
-        android:pathData="M54,79 A24,24 0 0,0 74.8,43"
+        android:pathData="M54,79 A24,24 0 0,0 72.7,40"
         android:strokeWidth="6"
         android:strokeColor="#404FA8EE"
         android:strokeLineCap="round" />
 
-    <!-- Main Gradient Ring: 240° arc around (54, 55) with radius 24 (Warm on left, Cold on right) -->
+    <!-- Main Gradient Ring: 290° arc around (54, 55) with radius 24 (Warm on left, Cold on right) -->
     <path
-        android:pathData="M74.8,43 A24,24 0 1,1 33.2,43"
+        android:pathData="M72.7,40 A24,24 0 1,1 38.7,36.5"
         android:strokeWidth="4.2"
         android:strokeLineCap="round">
         <aapt:attr name="android:strokeColor">
