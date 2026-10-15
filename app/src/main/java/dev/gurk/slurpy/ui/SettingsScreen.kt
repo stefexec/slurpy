@@ -175,7 +175,7 @@ fun SettingsScreen(
                     SettingsRow(
                         icon = Icons.Filled.Palette,
                         title = "Theme",
-                        subtitle = "${viewModel.theme.emoji} ${viewModel.theme.label}",
+                        subtitle = "${viewModel.theme.emoji} ${viewModel.theme.label} · ${viewModel.theme.description}",
                         onClick = { showThemeDialog = true },
                     )
                     Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242424)))
@@ -498,21 +498,29 @@ private fun ThemePickerDialog(
                             .padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(theme.emoji, fontSize = 22.sp)
+                        Text(theme.emoji, fontSize = 24.sp)
                         Spacer(Modifier.width(12.dp))
-                        Text(
-                            text = theme.label,
-                            color = TextPrimary,
-                            fontSize = 16.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            modifier = Modifier.weight(1f),
-                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = theme.label,
+                                color = TextPrimary,
+                                fontSize = 16.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                            )
+                            Text(
+                                text = theme.description,
+                                color = TextSecondary,
+                                fontSize = 12.sp,
+                            )
+                        }
+                        Spacer(Modifier.width(10.dp))
                         // Swatch dot
                         Box(
                             modifier = Modifier
-                                .size(18.dp)
+                                .size(20.dp)
                                 .clip(CircleShape)
                                 .background(colors.accent)
+                                .border(1.dp, Color(0x33FFFFFF), CircleShape)
                         )
                     }
                     Spacer(Modifier.height(8.dp))

@@ -84,9 +84,11 @@ enum class Sound(val label: String) {
     Silent("Silent"),
 }
 
-enum class AppTheme(val label: String, val emoji: String) {
-    Classic("Classic", "🌑"),
-    Ember("Ember", "🔥"),
-    Arctic("Arctic", "🌊"),
-    Terp("Terp", "🌿"),
+enum class AppTheme(val label: String, val emoji: String, val description: String) {
+    Classic("Classic", "🌑", "Dark mode with warm amber"),
+    Ember("Ember", "🔥", "Fiery orange & charcoal glow"),
+    Arctic("Arctic", "🌊", "Sub-zero ice blue & oceanic slate"),
+    Terp("Terp", "🌿", "Lush herbal emerald green"),
+    Goth("Goth", "🖤", "Pitch black, charcoal & blood red"),
+    Haze("Purple Haze", "🔮", "Midnight violet & electric purple"),
 }

@@ -46,6 +46,14 @@ fun AppTheme.colors(): SlurpyColors = when (this) {
         background = Color(0xFF0C110D), surface = Color(0xFF151D16), sheet = Color(0xFF172018),
         accent = Color(0xFF6CCB5F), selectedCard = Color(0xFF142416), stepper = Color(0xFF1B301D),
     )
+    AppTheme.Goth -> SlurpyColors(
+        background = Color(0xFF0A0A0A), surface = Color(0xFF141414), sheet = Color(0xFF171717),
+        accent = Color(0xFFE53935), selectedCard = Color(0xFF221113), stepper = Color(0xFF2B1417),
+    )
+    AppTheme.Haze -> SlurpyColors(
+        background = Color(0xFF0E0B16), surface = Color(0xFF171324), sheet = Color(0xFF1C172B),
+        accent = Color(0xFFA855F7), selectedCard = Color(0xFF201338), stepper = Color(0xFF2B194C),
+    )
 }
 
 val LocalSlurpyColors = staticCompositionLocalOf { AppTheme.Classic.colors() }

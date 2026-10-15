@@ -10,7 +10,7 @@ Slurpy is a free, privacy-friendly, open-source precision companion timer for co
 - **Celsius / Fahrenheit Toggle**: Switch temperature display and steppers instantly.
 - **Activity & Trend Calendar**: Weekly distribution bar charts and a compact 4-week activity heatmap with week-over-week trend tracking.
 - **Swipe-to-Delete**: Swipe logs to remove entries with a 5-second undo snackbar.
-- **Dark Themes**: Classic, Ember, Arctic, and Terp color schemes.
+- **Dark Themes**: Classic (Amber), Ember (Orange), Arctic (Blue), Terp (Green), Goth (Pitch Black / Crimson), and Purple Haze (Midnight Violet).
 - **Cleaning Guide**: Built-in instructions for quartz banger care and ISO maintenance.
 - **100% Offline & Private**: Zero analytics, zero ads, zero tracking, zero internet permissions required.
 

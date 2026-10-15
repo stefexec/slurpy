@@ -7,5 +7,5 @@ Features:
 • Activity History & Trend Calendar: View logged sessions, all-time weekly distribution bar charts, and a compact 4-week activity heatmap with week-over-week trend insights.
 • Swipe to Delete: Manage session logs with swipe-to-reveal delete and a 5-second undo recovery notice.
 • Banger Cleaning Guide: Built-in step-by-step care and maintenance manual to preserve heat retention and flavor.
-• Multiple Dark Themes: Choose between different nice looking color schemes.
+• Multiple Dark Themes: Choose between Classic, Ember, Arctic, Terp, Goth, and Purple Haze aesthetics.
 • 100% Offline & Private: No trackers, no ads, no internet permissions, no data collection.
