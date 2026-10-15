@@ -37,9 +37,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val timerState = viewModel.timer
 
-            // Keep screen on while timer is active
-            DisposableEffect(timerState) {
-                if (timerState != null) {
+            // Keep screen on while app is open
+            DisposableEffect(viewModel.keepScreenOn) {
+                if (viewModel.keepScreenOn) {
                     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                 } else {
                     window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

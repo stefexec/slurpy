@@ -42,6 +42,7 @@ import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material.icons.filled.Vibration
 import androidx.compose.material.icons.filled.VolumeUp
@@ -244,6 +245,14 @@ fun SettingsScreen(
                         title = "Temperature Unit",
                         subtitle = "${viewModel.tempUnit.label} (${viewModel.tempUnit.symbol})",
                         onClick = { showTempUnitDialog = true },
+                    )
+                    Box(modifier = Modifier.fillMaxWidth().height(1.dp).background(Color(0xFF242424)))
+                    SettingsToggleRow(
+                        icon = Icons.Filled.Smartphone,
+                        title = "Keep Screen On",
+                        subtitle = "Prevent device from locking while Slurpy is open",
+                        checked = viewModel.keepScreenOn,
+                        onCheckedChange = { viewModel.updateKeepScreenOn(it) },
                     )
                 }
             }

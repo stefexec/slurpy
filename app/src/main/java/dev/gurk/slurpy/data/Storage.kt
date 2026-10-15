@@ -69,6 +69,10 @@ class Storage(context: Context) {
         get() = prefs.getBoolean(KEY_HAS_SEEN_SUPPORT, false)
         set(value) = prefs.edit { putBoolean(KEY_HAS_SEEN_SUPPORT, value) }
 
+    var keepScreenOn: Boolean
+        get() = prefs.getBoolean(KEY_KEEP_SCREEN_ON, true)
+        set(value) = prefs.edit { putBoolean(KEY_KEEP_SCREEN_ON, value) }
+
     private inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =
         enumValues<T>().firstOrNull { it.name == name } ?: default
 
@@ -115,5 +119,6 @@ class Storage(context: Context) {
         const val KEY_TEMP_UNIT = "temp_unit"
         const val KEY_VIBRATION = "vibration_enabled"
         const val KEY_HAS_SEEN_SUPPORT = "has_seen_support"
+        const val KEY_KEEP_SCREEN_ON = "keep_screen_on"
     }
 }

@@ -52,6 +52,8 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         private set
     var tempUnit by mutableStateOf(storage.tempUnit)
         private set
+    var keepScreenOn by mutableStateOf(storage.keepScreenOn)
+        private set
     var hasSeenSupportPrompt by mutableStateOf(storage.hasSeenSupportPrompt)
         private set
     var sessions by mutableStateOf(storage.loadSessions())
@@ -125,6 +127,11 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun updateTempUnit(unit: TempUnit) {
         tempUnit = unit
         storage.tempUnit = unit
+    }
+
+    fun updateKeepScreenOn(enabled: Boolean) {
+        keepScreenOn = enabled
+        storage.keepScreenOn = enabled
     }
 
     fun updateVibrationEnabled(enabled: Boolean) {
