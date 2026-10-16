@@ -17,7 +17,7 @@ Repo: https://gitlab.com/gurkenwerfer/slurpy.git
 Builds:
   - versionName: 1.1.0
     versionCode: 2
-    commit: 01e2fccab30ff161c944ebc40fcffaa5008518be
+    commit: 0f4cb3cb358ffdb8d9435b6fa0c427fa6a83d711
     subdir: app
     gradle:
       - yes
