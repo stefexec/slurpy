@@ -1,0 +1,9 @@
+Initial F-Droid release of Slurpy!
+• Precision dual-phase heat and cool countdown timer
+• Customizable presets with custom emojis, timings, and temperature targets
+• Celsius and Fahrenheit temperature unit support
+• Session history with habit heatmap and frequency charts
+• 6 dark themes: Classic, Ember, Arctic, Terp, Goth, and Purple Haze
+• Always-on display option to prevent device sleep
+• Built-in banger cleaning and quartz care guide
+• Privacy-first: 100% offline, zero trackers, no permissions
