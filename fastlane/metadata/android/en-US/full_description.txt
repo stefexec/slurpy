@@ -1,4 +1,4 @@
-Slurpy is a free, privacy-friendly, open-source companion app and precision countdown timer for concentrates and quartz bangers.
+Slurpy is a free, privacy-friendly, open-source dabbing companion app and precision countdown timer for concentrates and quartz bangers. Designed to elevate your dabbing sessions, it guides you to the ideal vaporization temperature every time.
 
 Features:
 • Precision Heating & Cooling Phases: Prominent countdown timer with smooth visual arc progress, synthesized audio chimes, and optional haptic vibration alerts.
